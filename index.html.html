@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avaus Lunch Radar — Albertinkatu 25 B</title>
+  <link rel="icon" type="image/png" href="https://avaus-design-system.lovable.app/brand/avaus-favicon.png" />
+  
+  <!-- Google Fonts: Poppins (headings) & Roboto (body) as per Avaus Design System -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['Poppins', 'sans-serif'],
+            body: ['Roboto', 'sans-serif'],
+          },
+          colors: {
+            blueberry: '#363760',
+            rose: '#FAEFED',
+            cloudberry: '#FF8709',
+            pine: '#135A61',
+            stone: '#515458',
+            sky: '#C5CDE4',
+            gravel: '#EDEDEF',
+            wood: '#DEC8C0',
+            border: '#E3E3E3',
+            'muted-foreground': '#737373',
+          },
+          borderRadius: {
+            lg: '0.5rem',
+            md: '0.375rem',
+            sm: '0.25rem',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      color: #363760;
+      background-color: #F2F7F7;
+    }
+    h1, h2, h3, h4, h5, h6, .font-heading {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#F2F7F7] text-blueberry">
+
+  <!-- Copied Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-200 pointer-events-none bg-blueberry text-white px-5 py-3 rounded-md shadow-lg border border-border text-sm font-medium">
+    <span id="toast-message">Copied to clipboard for Slack</span>
+  </div>
+
+  <!-- Header -->
+  <header class="border-b border-border bg-white sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <img 
+          src="https://avaus-design-system.lovable.app/brand/avaus-logo-blueberry.png" 
+          alt="Avaus" 
+          height="32" 
+          class="h-8 w-auto object-contain"
+        />
+        <div class="hidden sm:block border-l border-border pl-4">
+          <p class="text-xs uppercase tracking-wider text-muted-foreground font-medium">Lunch Radar</p>
+          <p class="text-xs font-heading font-semibold text-blueberry">Albertinkatu 25 B</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span id="current-date-badge" class="text-xs font-medium px-3 py-1.5 rounded-md bg-gravel text-blueberry">
+          Today
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-6xl mx-auto px-6 py-8 w-full space-y-8">
+    
+    <!-- Hero & Weather Box Section -->
+    <section class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-2 border-b border-border/60">
+      <div class="space-y-1">
+        <h1 class="text-3xl font-heading font-bold text-blueberry tracking-tight">Today's Lunch Selections</h1>
+        <p class="text-sm text-muted-foreground">
+          Real-time menus, lunch hours and walking times from <strong>Albertinkatu 25 B</strong>.
+        </p>
+      </div>
+
+      <!-- Lunch Time Weather Widget -->
+      <div class="bg-white rounded-lg p-5 border border-border flex items-center justify-between gap-6 min-w-[320px] shadow-sm">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-heading font-semibold uppercase tracking-wider text-blueberry">Lunch time weather</span>
+            <span class="text-[11px] px-2 py-0.5 rounded bg-gravel text-muted-foreground border border-border">11:00–14:00</span>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span id="weather-temp" class="text-3xl font-heading font-bold text-blueberry">+5°C</span>
+            <span id="weather-desc" class="text-xs text-stone font-medium capitalize">Partly cloudy</span>
+          </div>
+        </div>
+
+        <div class="text-right border-l border-border pl-5 space-y-1 text-xs">
+          <div class="text-blueberry">
+            Rain: <span id="weather-rain" class="font-medium">10%</span>
+          </div>
+          <div class="text-muted-foreground">
+            Wind: <span id="weather-wind">4.2 m/s</span>
+          </div>
+          <div class="text-[11px] text-muted-foreground">
+            Punavuori
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search and Filter Controls -->
+    <section class="space-y-4">
+      <div class="flex flex-col sm:flex-row gap-3">
+        <!-- Search bar -->
+        <div class="flex-1">
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Search by restaurant name, dish, or ingredient..." 
+            class="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-cloudberry text-blueberry placeholder:text-muted-foreground"
+          >
+        </div>
+
+        <!-- Sort dropdown -->
+        <div class="flex items-center gap-2">
+          <label for="sort-select" class="text-xs font-medium text-stone whitespace-nowrap">Sort by:</label>
+          <select id="sort-select" class="bg-white border border-border text-blueberry text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-cloudberry">
+            <option value="distance">Distance (Closest first)</option>
+            <option value="name">Name (A-Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Text-driven filter buttons -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+        <button class="filter-btn px-4 py-2 rounded-md font-medium transition-colors bg-blueberry text-white" data-category="all">
+          All (11)
+        </button>
+        <button class="filter-btn px-4 py-2 rounded-md font-medium transition-colors bg-white border border-border text-stone hover:bg-gravel" data-category="closest">
+          Closest (&lt;300m)
+        </button>
+        <button class="filter-btn px-4 py-2 rounded-md font-medium transition-colors bg-white border border-border text-stone hover:bg-gravel" data-category="asian">
+          Asian &amp; Noodles
+        </button>
+        <button class="filter-btn px-4 py-2 rounded-md font-medium transition-colors bg-white border border-border text-stone hover:bg-gravel" data-category="bistro">
+          Bistro &amp; Buffet
+        </button>
+        <button class="filter-btn px-4 py-2 rounded-md font-medium transition-colors bg-white border border-border text-stone hover:bg-gravel" data-category="healthy">
+          Bowls &amp; Salad
+        </button>
+        <button class="filter-btn px-4 py-2 rounded-md font-medium transition-colors bg-white border border-border text-stone hover:bg-gravel" data-category="street">
+          Tacos &amp; Street
+        </button>
+      </div>
+    </section>
+
+    <!-- Restaurants Card Grid -->
+    <div id="restaurants-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Injected via JavaScript -->
+    </div>
+
+    <!-- Empty search result fallback -->
+    <div id="no-results" class="hidden text-center py-16 bg-gravel/40 rounded-lg border border-border">
+      <h3 class="text-base font-heading font-semibold text-blueberry">No matching restaurants found</h3>
+      <p class="text-sm text-muted-foreground mt-1">Try another dish name or clear search filters.</p>
+      <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-cloudberry text-white rounded-md text-xs font-medium hover:opacity-90">
+        Reset filters
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-t border-border bg-white py-6 text-xs text-muted-foreground">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div>
+        Avaus Lunch Radar · Designed for <strong>Albertinkatu 25 B</strong>
+      </div>
+      <div class="text-stone">
+        Weather source: Open-Meteo API
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic -->
+  <script>
+    // 11 Confirmed Restaurants around Albertinkatu 25 B
+    const restaurants = [
+      {
+        id: "pompier",
+        name: "Pompier Albertinkatu",
+        address: "Albertinkatu 29, 00180 Helsinki",
+        distanceMeters: 90,
+        walkMinutes: 1,
+        lunchHours: "11:00 – 14:00",
+        category: "bistro",
+        mapsUrl: "https://maps.google.com/?q=Pompier+Albertinkatu+29+Helsinki",
+        websiteUrl: "https://pompier.fi/albertinkatu/lounas/",
+        tags: ["Buffet", "Fresh Bread", "Bistro"],
+        priceRange: "14.90 €",
+        menuHighlights: [
+          { name: "Roasted Salmon with Dill Butter Sauce & Potato Puree", diet: "GF" },
+          { name: "Creamy Chanterelle & Leek Risotto", diet: "VG, GF" },
+          { name: "Organic salad buffet & artisan house sourdough bread included", diet: "Buffet" }
+        ]
+      },
+      {
+        id: "liemi",
+        name: "Liemi Bulevardi",
+        address: "Bulevardi 18, 00120 Helsinki",
+        distanceMeters: 190,
+        walkMinutes: 2,
+        lunchHours: "11:00 – 14:00",
+        category: "asian",
+        mapsUrl: "https://maps.google.com/?q=Liemi+Bulevardi+18+Helsinki",
+        websiteUrl: "https://www.liemi.fi/en",
+        tags: ["Vietnamese", "Pho Soup", "Noodles"],
+        priceRange: "14.50 € – 15.90 €",
+        menuHighlights: [
+          { name: "Classic Beef Pho (Simmered 14h bone broth, rice noodles, fresh herbs)", diet: "GF" },
+          { name: "Crispy Lemongrass Tofu Rice Noodle Salad (Bun Chay)", diet: "VG, GF" },
+          { name: "Fresh Vietnamese Summer Rolls with House Peanut Dip", diet: "GF, DF" }
+        ]
+      },
+      {
+        id: "levant",
+        name: "Levant Bulevardi",
+        address: "Bulevardi 15, 00120 Helsinki",
+        distanceMeters: 230,
+        walkMinutes: 3,
+        lunchHours: "11:00 – 15:00",
+        category: "healthy",
+        mapsUrl: "https://maps.google.com/?q=Levant+Bulevardi+15+Helsinki",
+        websiteUrl: "https://levant.fi",
+        tags: ["Middle Eastern", "Meze", "Falafel"],
+        priceRange: "12.90 € – 14.50 €",
+        menuHighlights: [
+          { name: "Warm Falafel Meze Plate (Hummus, tabbouleh, muhammara, pita)", diet: "VG, DF" },
+          { name: "Spiced Chicken Shawarma Roll with garlic toum sauce", diet: "DF" },
+          { name: "Grilled Halloumi & Roasted Vegetable Bowl", diet: "GF" }
+        ]
+      },
+      {
+        id: "southpark",
+        name: "Southpark",
+        address: "Bulevardi 40 (Sinebrychoff Park), 00120 Helsinki",
+        distanceMeters: 240,
+        walkMinutes: 3,
+        lunchHours: "11:00 – 14:30",
+        category: "bistro",
+        mapsUrl: "https://maps.google.com/?q=Southpark+Restaurant+Bulevardi+40+Helsinki",
+        websiteUrl: "https://southparkrestaurant.fi",
+        tags: ["Park View", "Daily Plates", "Casual"],
+        priceRange: "14.70 €",
+        menuHighlights: [
+          { name: "Korean BBQ Glazed Pork Belly with Kimchi Fried Rice", diet: "DF" },
+          { name: "Miso Glazed Eggplant Bowl with edamame & sesame rice", diet: "VG, GF" },
+          { name: "Daily Chef's Market Soup with sourdough & herb butter", diet: "GF opt" }
+        ]
+      },
+      {
+        id: "fazer",
+        name: "Fazer Café Bulevardi",
+        address: "Bulevardi 38, 00120 Helsinki",
+        distanceMeters: 250,
+        walkMinutes: 3,
+        lunchHours: "11:00 – 14:00",
+        category: "bistro",
+        mapsUrl: "https://maps.google.com/?q=Fazer+Cafe+Bulevardi+38+Helsinki",
+        websiteUrl: "https://www.fazer.fi/fazer-cafe/kahvilat/fazer-cafe-bulevardi/",
+        tags: ["Salmon Soup", "Salad Bar", "Classic"],
+        priceRange: "13.90 € – 15.50 €",
+        menuHighlights: [
+          { name: "Traditional Finnish Creamy Salmon Soup with rye archipelago bread", diet: "GF opt" },
+          { name: "Daily Warm Buffet Special (e.g. Herb-crusted Chicken / Roast Veg)", diet: "GF" },
+          { name: "Abundant Harvest Salad Bar + Fazer artisan breads & coffee", diet: "Buffet" }
+        ]
+      },
+      {
+        id: "noodlestory",
+        name: "Noodle Story",
+        address: "Fredrikinkatu 34, 00120 Helsinki",
+        distanceMeters: 300,
+        walkMinutes: 4,
+        lunchHours: "11:00 – 15:00",
+        category: "asian",
+        mapsUrl: "https://maps.google.com/?q=Noodle+Story+Fredrikinkatu+34+Helsinki",
+        websiteUrl: "https://noodlestory.fi",
+        tags: ["Handmade Noodles", "Sichuan", "Dumplings"],
+        priceRange: "13.50 € – 14.90 €",
+        menuHighlights: [
+          { name: "Hand-Pulled Dan Dan Noodles with Minced Pork & Chili Oil", diet: "DF" },
+          { name: "Slow-Braised Beef Shank Noodle Soup in rich aromatic broth", diet: "DF" },
+          { name: "Crispy Pan-Fried Vegetarian Dumplings with sweet soy dip", diet: "VG" }
+        ]
+      },
+      {
+        id: "picnic",
+        name: "Cafe Picnic Fredrikinkatu",
+        address: "Fredrikinkatu 29, 00120 Helsinki",
+        distanceMeters: 320,
+        walkMinutes: 4,
+        lunchHours: "10:30 – 14:30",
+        category: "healthy",
+        mapsUrl: "https://maps.google.com/?q=Picnic+Fredrikinkatu+29+Helsinki",
+        websiteUrl: "https://picnic.fi",
+        tags: ["Baked Potatoes", "Quick Lunch", "Warm Bagels"],
+        priceRange: "11.90 € – 13.90 €",
+        menuHighlights: [
+          { name: "Oven Baked Potato with Smoked Salmon or Chicken Curry Filling", diet: "GF" },
+          { name: "Warm Toasted Roast Beef & Mustard Remoulade Bagel", diet: "Quick" },
+          { name: "Daily Vegetarian Creamy Soup with fresh mini baguette", diet: "VG" }
+        ]
+      },
+      {
+        id: "greenhippo",
+        name: "Green Hippo Fredrikintori",
+        address: "Punavuorenkatu 2, 00120 Helsinki",
+        distanceMeters: 350,
+        walkMinutes: 4,
+        lunchHours: "11:00 – 15:00",
+        category: "healthy",
+        mapsUrl: "https://maps.google.com/?q=Green+Hippo+Punavuorenkatu+2+Helsinki",
+        websiteUrl: "https://greenhippocafe.rocks",
+        tags: ["Healthy", "Fresh Bowls", "Salad"],
+        priceRange: "13.90 € – 15.50 €",
+        menuHighlights: [
+          { name: "Avocado Pasta with lime, chili, garlic & parmesan", diet: "VG" },
+          { name: "Warm Teriyaki Salmon Bowl with quinoa, edamame & pickled ginger", diet: "GF, DF" },
+          { name: "Vegan Falafel Bowl with beetroot hummus & roasted pumpkin", diet: "VG, GF" }
+        ]
+      },
+      {
+        id: "seksico",
+        name: "Seksico Tacos",
+        address: "Fredrikinkatu / Uudenmaankatu area, 00120 Helsinki",
+        distanceMeters: 350,
+        walkMinutes: 4,
+        lunchHours: "11:00 – 14:30",
+        category: "street",
+        mapsUrl: "https://maps.google.com/?q=Seksico+Tacos+Helsinki",
+        websiteUrl: "https://seksico.com/lunch.html",
+        tags: ["Mexican", "Street Tacos", "Tortillas"],
+        priceRange: "13.50 € – 14.50 €",
+        menuHighlights: [
+          { name: "3 x Birria Beef Tacos with rich dipping consommé broth", diet: "GF" },
+          { name: "Crispy Battered Fish Tacos with chipotle crema & pico de gallo", diet: "DF" },
+          { name: "Smoky Black Bean & Grilled Cactus (Nopal) Tacos", diet: "VG, GF" }
+        ]
+      },
+      {
+        id: "labra",
+        name: "LaBra",
+        address: "Pursimiehenkatu 5, 00150 Helsinki",
+        distanceMeters: 450,
+        walkMinutes: 5,
+        lunchHours: "11:00 – 14:00",
+        category: "bistro",
+        mapsUrl: "https://maps.google.com/?q=Ravintola+LaBra+Pursimiehenkatu+5+Helsinki",
+        websiteUrl: "https://www.ravintolalabra.fi/lunch",
+        tags: ["Seasonal", "Artisanal", "Nordic"],
+        priceRange: "14.90 € – 16.50 €",
+        menuHighlights: [
+          { name: "Pan-Seared Pike Perch with brown butter, capers & crushed potatoes", diet: "GF" },
+          { name: "Slow-Braised Chuck Roll with root vegetable mash & dark thyme jus", diet: "GF, DF" },
+          { name: "Roasted Celeriac Steak with hazelnut emulsion & pickled mustard seeds", diet: "VG, GF" }
+        ]
+      },
+      {
+        id: "eatpoke",
+        name: "Eat Poke Kamppi",
+        address: "Urho Kekkosen katu 1, 00100 Helsinki",
+        distanceMeters: 500,
+        walkMinutes: 6,
+        lunchHours: "10:30 – 15:00",
+        category: "healthy",
+        mapsUrl: "https://maps.google.com/?q=Eat+Poke+Kamppi+Urho+Kekkosen+katu+1+Helsinki",
+        websiteUrl: "https://eatpoke.fi",
+        tags: ["Hawaiian Poke", "Salmon Bowls", "Fast Casual"],
+        priceRange: "13.90 € – 15.50 €",
+        menuHighlights: [
+          { name: "Classic Ahi Tuna & Fresh Salmon Poke Bowl with sesame soy & sushi rice", diet: "GF, DF" },
+          { name: "Spicy Mayo Shrimps Bowl with mango, avocado, wakame & crispy onions", diet: "DF" },
+          { name: "Marinated Tofu & Sweet Shiitake Bowl with ponzu dressing", diet: "VG, GF" }
+        ]
+      }
+    ];
+
+    let currentCategory = 'all';
+    let searchQuery = '';
+    let sortBy = 'distance';
+
+    // Render Cards
+    function renderCards() {
+      const container = document.getElementById('restaurants-grid');
+      const noResults = document.getElementById('no-results');
+      if (!container) return;
+
+      let filtered = restaurants.filter(item => {
+        const matchesCategory = 
+          currentCategory === 'all' ? true :
+          currentCategory === 'closest' ? item.distanceMeters <= 300 :
+          item.category === currentCategory;
+
+        const q = searchQuery.toLowerCase().trim();
+        const matchesSearch = !q || 
+          item.name.toLowerCase().includes(q) ||
+          item.tags.some(t => t.toLowerCase().includes(q)) ||
+          item.menuHighlights.some(m => m.name.toLowerCase().includes(q));
+
+        return matchesCategory && matchesSearch;
+      });
+
+      filtered.sort((a, b) => {
+        if (sortBy === 'distance') return a.distanceMeters - b.distanceMeters;
+        if (sortBy === 'name') return a.name.localeCompare(b.name);
+        return 0;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        noResults.classList.remove('hidden');
+        return;
+      }
+
+      noResults.classList.add('hidden');
+
+      container.innerHTML = filtered.map(r => `
+        <div class="bg-white rounded-lg border border-border p-6 flex flex-col justify-between hover:border-blueberry/40 transition-colors">
+          <div>
+            <!-- Top meta line: Name & Distance badge -->
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <h3 class="text-base font-heading font-semibold text-blueberry leading-tight">
+                ${r.name}
+              </h3>
+              <span class="text-xs font-medium px-2 py-0.5 rounded bg-gravel text-blueberry shrink-0">
+                ${r.distanceMeters} m (${r.walkMinutes} min)
+              </span>
+            </div>
+
+            <!-- Address link -->
+            <a href="${r.mapsUrl}" target="_blank" rel="noopener noreferrer" class="text-xs text-muted-foreground hover:text-blueberry block mb-3">
+              ${r.address}
+            </a>
+
+            <!-- Hours & Price badge row -->
+            <div class="flex items-center gap-2 mb-4">
+              <span class="text-xs font-medium px-2 py-0.5 rounded bg-rose text-blueberry border border-border/50">
+                ${r.lunchHours}
+              </span>
+              <span class="text-xs font-medium text-stone">
+                ${r.priceRange}
+              </span>
+            </div>
+
+            <!-- Menu items -->
+            <div class="border-t border-border/70 pt-3 mb-5 space-y-2">
+              <div class="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Today's menu</div>
+              <ul class="space-y-1.5 text-xs text-stone">
+                ${r.menuHighlights.map(item => `
+                  <li class="flex items-start justify-between gap-2">
+                    <span>${item.name}</span>
+                    ${item.diet ? `<span class="text-[11px] font-medium text-muted-foreground shrink-0">${item.diet}</span>` : ''}
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          </div>
+
+          <!-- Bottom Actions -->
+          <div class="border-t border-border pt-4 flex items-center gap-2">
+            <a 
+              href="${r.websiteUrl}" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="flex-1 text-center py-2 px-3 rounded-md bg-gravel hover:bg-gravel/80 text-xs font-medium text-blueberry transition-colors"
+            >
+              Website
+            </a>
+            <button 
+              onclick="copyToSlack('${r.id}')"
+              class="py-2 px-3 rounded-md border border-border hover:border-blueberry text-xs font-medium text-blueberry transition-colors"
+            >
+              Copy for Slack
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Copy to Slack action
+    function copyToSlack(restaurantId) {
+      const rest = restaurants.find(r => r.id === restaurantId);
+      if (!rest) return;
+
+      const itemsText = rest.menuHighlights.map(m => `• ${m.name} (${m.diet})`).join('\n');
+      const slackMessage = 
+`*${rest.name}* (${rest.distanceMeters}m from office, ~${rest.walkMinutes} min walk)
+Hours: ${rest.lunchHours}
+Address: ${rest.address}
+Price: ${rest.priceRange}
+
+Menu highlights:
+${itemsText}
+
+Website: ${rest.websiteUrl}`;
+
+      const tempTextArea = document.createElement("textarea");
+      tempTextArea.value = slackMessage;
+      tempTextArea.style.position = "fixed";
+      tempTextArea.style.left = "-9999px";
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select();
+      
+      try {
+        document.execCommand('copy');
+        showToast(`Copied ${rest.name} for Slack`);
+      } catch (err) {
+        console.error("Copy failed", err);
+      } finally {
+        document.body.removeChild(tempTextArea);
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      if (!toast || !toastMsg) return;
+
+      toastMsg.innerText = message;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2500);
+    }
+
+    function getWeatherDesc(code) {
+      const weatherCodes = {
+        0: 'Clear sky',
+        1: 'Mainly clear',
+        2: 'Partly cloudy',
+        3: 'Overcast',
+        45: 'Foggy',
+        48: 'Depositing rime fog',
+        51: 'Light drizzle',
+        53: 'Moderate drizzle',
+        55: 'Dense drizzle',
+        61: 'Slight rain',
+        63: 'Moderate rain',
+        65: 'Heavy rain',
+        71: 'Slight snow',
+        73: 'Moderate snow',
+        75: 'Heavy snow',
+        77: 'Snow grains',
+        80: 'Slight rain showers',
+        81: 'Moderate rain showers',
+        82: 'Violent rain showers',
+        85: 'Slight snow showers',
+        86: 'Heavy snow showers'
+      };
+      return weatherCodes[code] || 'Partly cloudy';
+    }
+
+    async function fetchWeather() {
+      const lat = 60.1633;
+      const lon = 24.9351;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&hourly=precipitation_probability,temperature_2m&timezone=Europe%2FHelsinki&forecast_days=1`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) return;
+        const data = await response.json();
+
+        const temp = Math.round(data.current.temperature_2m);
+        const wind = data.current.wind_speed_10m;
+        const code = data.current.weather_code;
+
+        let rainProb = 10;
+        if (data.hourly && data.hourly.precipitation_probability) {
+          const lunchHours = data.hourly.precipitation_probability.slice(11, 15);
+          rainProb = Math.max(...lunchHours, 0);
+        }
+
+        const desc = getWeatherDesc(code);
+        document.getElementById('weather-temp').innerText = `${temp > 0 ? '+' : ''}${temp}°C`;
+        document.getElementById('weather-desc').innerText = desc;
+        document.getElementById('weather-rain').innerText = `${rainProb}%`;
+        document.getElementById('weather-wind').innerText = `${wind} m/s`;
+      } catch (err) {
+        console.warn("Weather fetch fallback:", err);
+      }
+    }
+
+    function resetFilters() {
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) searchInput.value = '';
+      searchQuery = '';
+      currentCategory = 'all';
+      
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        if (b.dataset.category === 'all') {
+          b.className = "filter-btn px-4 py-2 rounded-md font-medium transition-colors bg-blueberry text-white";
+        } else {
+          b.className = "filter-btn px-4 py-2 rounded-md font-medium transition-colors bg-white border border-border text-stone hover:bg-gravel";
+        }
+      });
+      renderCards();
+    }
+
+    // Attach Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set date
+      const dateEl = document.getElementById('current-date-badge');
+      if (dateEl) {
+        const now = new Date();
+        dateEl.innerText = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      }
+
+      // Filter buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.filter-btn').forEach(b => {
+            b.className = "filter-btn px-4 py-2 rounded-md font-medium transition-colors bg-white border border-border text-stone hover:bg-gravel";
+          });
+          const target = e.currentTarget;
+          target.className = "filter-btn px-4 py-2 rounded-md font-medium transition-colors bg-blueberry text-white";
+          currentCategory = target.dataset.category;
+          renderCards();
+        });
+      });
+
+      // Search
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          searchQuery = e.target.value;
+          renderCards();
+        });
+      }
+
+      // Sort
+      const sortSelect = document.getElementById('sort-select');
+      if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+          sortBy = e.target.value;
+          renderCards();
+        });
+      }
+
+      // Render cards immediately
+      renderCards();
+
+      // Fetch weather asynchronously without blocking layout
+      fetchWeather();
+    });
+  </script>
+</body>
+</html>
