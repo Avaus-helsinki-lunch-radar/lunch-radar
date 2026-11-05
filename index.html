@@ -149,7 +149,7 @@
       <!-- Text-driven filter buttons -->
       <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
         <button class="filter-btn px-4 py-2 rounded-md font-medium transition-colors bg-blueberry text-white" data-category="all">
-          All (11)
+          All (10)
         </button>
         <button class="filter-btn px-4 py-2 rounded-md font-medium transition-colors bg-white border border-border text-stone hover:bg-gravel" data-category="closest">
           Closest (&lt;300m)
@@ -200,6 +200,255 @@
   <!-- Application Logic -->
   <script>
     // 11 Confirmed Restaurants around Albertinkatu 25 B
+    const pompierWeeklyMenu = {
+      1: {
+        day: "Monday",
+        dateLabel: "Maanantai",
+        dishes: [
+          { name: "Pöytä 1: Tapenadella gratinoitua kirjolohta, sitruunakermaviilikastiketta ja aurinkokuivatulla tomaatilla maustettua perunamuusia", diet: "14.50 €" },
+          { name: "Pöytä 2: Runsas salaattipöytä sekä kermaista tattikeittoa ja pikkelöityä omenaa", diet: "14.50 €" },
+          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
+        ]
+      },
+      2: {
+        day: "Tuesday",
+        dateLabel: "Tiistai",
+        dishes: [
+          { name: "Pöytä 1: Pannupihvejä härän paistista, chilimajoneesia ja pekoni-perunavoita", diet: "14.50 €" },
+          { name: "Pöytä 2: Runsas salaattipöytä sekä koskenlaskijan kirjolohikeittoa ja ruohosipuliöljyä", diet: "14.50 €" },
+          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
+        ]
+      },
+      3: {
+        day: "Wednesday",
+        dateLabel: "Keskiviikko",
+        dishes: [
+          { name: "Pöytä 1: Rapeaa kananpojan rintafileetä, gremolataa ja sahramirisottoa", diet: "14.50 €" },
+          { name: "Pöytä 2: Runsas salaattipöytä sekä meksikolaista maissi-bataattikeittoa ja nachoja", diet: "14.50 €" },
+          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
+        ]
+      },
+      4: {
+        day: "Thursday",
+        dateLabel: "Torstai",
+        dishes: [
+          { name: "Pöytä 1: Pompier Fish & Chips: curryremouladea, minttuherneitä ja paahdettuja perunoita", diet: "14.50 €" },
+          { name: "Pöytä 2: Runsas salaattipöytä sekä perinteistä hernekeittoa ja pannukakkua", diet: "14.50 €" },
+          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
+        ]
+      },
+      5: {
+        day: "Friday",
+        dateLabel: "Perjantai",
+        dishes: [
+          { name: "Pöytä 1: Pompierin lihapullia, Jaloviina-kermakastiketta, sokeroitua puolukkaa ja perunamuusia", diet: "14.50 €" },
+          { name: "Pöytä 2: Runsas salaattipöytä sekä bouillabaissea, rouillea ja krutonkeja", diet: "14.50 €" },
+          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
+        ]
+      }
+    };
+
+    const levantWeeklyMenu = {
+      1: {
+        day: "Monday",
+        dateLabel: "Mon",
+        dishes: [
+          { name: "Päivän lämmin: Kermainen savukana", diet: "14.50 €" },
+          { name: "Päivän kasvis: Okraa tomaattikastikkeessa", diet: "14.50 €" }
+        ]
+      },
+      2: {
+        day: "Tuesday",
+        dateLabel: "Tue",
+        dishes: [
+          { name: "Päivän lämmin: Kanaa fajitas-tyyliin", diet: "14.50 €" },
+          { name: "Päivän kasvis: Tahini-kukkakaalia", diet: "14.50 €" }
+        ]
+      },
+      3: {
+        day: "Wednesday",
+        dateLabel: "Wed",
+        dishes: [
+          { name: "Päivän lämmin: Lammastagine", diet: "14.50 €" },
+          { name: "Päivän kasvis: Tagine (kasvis/vegaaninen)", diet: "14.50 €" }
+        ]
+      },
+      4: {
+        day: "Thursday",
+        dateLabel: "Thu",
+        dishes: [
+          { name: "Päivän lämmin: Naudanlihapata", diet: "14.50 €" },
+          { name: "Päivän kasvis: Punainen kasviscurry", diet: "14.50 €" }
+        ]
+      },
+      5: {
+        day: "Friday",
+        dateLabel: "Fri",
+        dishes: [
+          { name: "Friday grill fiesta: Hiiligrillattua kanaa", diet: "15.50 €" },
+          { name: "Päivän kasvis: Grillattuja kasviksia", diet: "15.50 €" }
+        ]
+      }
+    };
+
+    const southparkWeeklyMenu = {
+      1: {
+        day: "Monday",
+        dateLabel: "Mon",
+        dishes: [
+          { name: "Keitto: Silkkistä punajuurikeittoa", diet: "12.90 €" },
+          { name: "Kotiruoka: Paistettua hunajakanaa, kreikkalainen orzo-fetasalaatti & tzatziki", diet: "14.90 €" },
+          { name: "Kasvis: Paistettua BBQ-Oumphia! & kreikkalainen orzo-fetasalaatti", diet: "14.90 €" },
+          { name: "Viikon annos: Naudan paahtopaistia, myskikurpitsapyrettä & Café de Paris", diet: "16.90 €" }
+        ]
+      },
+      2: {
+        day: "Tuesday",
+        dateLabel: "Tue",
+        dishes: [
+          { name: "Keitto: Kermainen palsternakka-omenakeitto", diet: "12.90 €" },
+          { name: "Kotiruoka: Talon lihamureketta, perunamuusia & kermainen sipuli-dijonkastike", diet: "14.90 €" },
+          { name: "Kasvis: Talon kikhernepihvejä, perunamuusia & sipuli-dijonkastike", diet: "14.90 €" },
+          { name: "Viikon annos: Paistettua kampelaa, piparjuuri-perunamuhennosta & tilliöljyä", diet: "16.90 €" }
+        ]
+      },
+      3: {
+        day: "Wednesday",
+        dateLabel: "Wed",
+        dishes: [
+          { name: "Keitto: Syksyinen / kauden kasvis-kaalikeitto", diet: "12.90 €" },
+          { name: "Kotiruoka: Pad Thai kanalla (paistetut riisinuudelit, kasvikset & pad thai -kastike)", diet: "14.90 €" },
+          { name: "Kasvis: Pad Thai tofulla (riisinuudelit, kasvikset & pähkinät)", diet: "14.90 €" },
+          { name: "Viikon annos: Naudan paahtopaistia, myskikurpitsapyrettä & Café de Paris", diet: "16.90 €" }
+        ]
+      },
+      4: {
+        day: "Thursday",
+        dateLabel: "Thu",
+        dishes: [
+          { name: "Keitto: Hernekeitto palvikinkulla, tuoreella sipulilla & sinapilla", diet: "12.90 €" },
+          { name: "Kotiruoka: Savutaimenta, tilliperunaa, hölskykurkkuja & kermaviilikastiketta", diet: "14.90 €" },
+          { name: "Kasvis: Ruiskuorrutettua savutofua, tilliperunaa & hölskykurkkuja", diet: "14.90 €" },
+          { name: "Viikon annos: Paistettua kampelaa, piparjuuri-perunamuhennosta & tilliöljyä", diet: "16.90 €" }
+        ]
+      },
+      5: {
+        day: "Friday",
+        dateLabel: "Fri",
+        dishes: [
+          { name: "Keitto: Kermainen kauden vihanneskeitto", diet: "12.90 €" },
+          { name: "Kotiruoka: Southern Fried Chicken, Mac and Cheese & raikas omena-slaw", diet: "14.90 €" },
+          { name: "Kasvis: Southern style rapea soijaleike, Mac and Cheese & omena-slaw", diet: "14.90 €" },
+          { name: "Viikon annos: Naudan paahtopaistia tai paistettua kampelaa", diet: "16.90 €" }
+        ]
+      }
+    };
+
+    const labraWeeklyMenu = {
+      1: {
+        day: "Monday",
+        dateLabel: "Mon",
+        dishes: [
+          { name: "Minced Beef Moussaka (aubergine, spiced beef, tomato)", diet: "15,50 €" },
+          { name: "Tofu Moussaka (aubergine, tofu, tomato, herbs)", diet: "15,50 €" },
+          { name: "Turkish Rice Pilaf & Red Lentil Soup (sis. salaattipöytä, leipä, dipit & kahvi)", diet: "15,50 €" }
+        ]
+      },
+      2: {
+        day: "Tuesday",
+        dateLabel: "Tue",
+        dishes: [
+          { name: "Za'atar Roasted Chicken Thigh & Creamy spinach sauce", diet: "15,50 €" },
+          { name: "Vine Leaf Sarma (täytetyt viininlehtikääryleet)", diet: "15,50 €" },
+          { name: "Roasted Seasonal Vegetables (sis. salaattipöytä, leipä, dipit & kahvi)", diet: "15,50 €" }
+        ]
+      },
+      3: {
+        day: "Wednesday",
+        dateLabel: "Wed",
+        dishes: [
+          { name: "Chipotle Beef Ragu (kidney beans, tomato, sweetcorn, coriander)", diet: "15,50 €" },
+          { name: "Miso Glazed Tofu & Broccoli with Steamed Rice", diet: "15,50 €" },
+          { name: "Buffet: Salaattipöytä, mezet, talon leipä & kahvi/tee", diet: "15,50 €" }
+        ]
+      },
+      4: {
+        day: "Thursday",
+        dateLabel: "Thu",
+        dishes: [
+          { name: "LaBra's Salmon Soup (perinteinen lohikeitto)", diet: "15,50 €" },
+          { name: "Spinach & Feta Pie & Paahdetut kauden kasvikset", diet: "15,50 €" },
+          { name: "Buffet: Salaattipöytä, talon leipä, dipit & kahvi/tee", diet: "15,50 €" }
+        ]
+      },
+      5: {
+        day: "Friday",
+        dateLabel: "Fri",
+        dishes: [
+          { name: "LaBra Dürüm Bar: Valitse kana, maustettu nauta, rapea munakoiso tai kikherneköfte", diet: "15,50 €" },
+          { name: "Täytteet & kastikkeet: Sumakkisipuli, pikkelit, yrtit, valkosipulijogurtti, ezme, tahini", diet: "Sisältyy" },
+          { name: "Buffet: Salaattipöytä, vastaleivottu leipä, dipit & kahvi/tee", diet: "15,50 €" }
+        ]
+      }
+    };
+
+    const pamelaWeeklyMenu = {
+      1: {
+        day: "Monday",
+        dateLabel: "Mon",
+        dishes: [
+          { name: "Päivän kasvis: Falafel", diet: "13.90 €" },
+          { name: "Päivän kala: Avotulella grillattua lohta", diet: "13.90 €" },
+          { name: "Klassikot: Pamelan mausteiset lihapullat tomaattikastikkeessa tai Döner Harjun kebab", diet: "13.90 / 14.90 €" },
+          { name: "Päivän lisukkeet: Hunaja-harissakastike, kurkumariisi, punajuurihummus & vihersalaatti", diet: "Sisältyy" }
+        ]
+      },
+      2: {
+        day: "Tuesday",
+        dateLabel: "Tue",
+        dishes: [
+          { name: "Päivän kasvis: Rapea tofu", diet: "13.90 €" },
+          { name: "Päivän liha: Pamelan mausteiset lihapullat tomaattikastikkeessa", diet: "13.90 €" },
+          { name: "Kebab: Döner Harjun vege- tai yaprak-vasikanlihakebab", diet: "13.90 / 14.90 €" },
+          { name: "Päivän lisukkeet: Harissa-sitruuna-voikastike, kurkumariisi, minttujugurtti & vihreä salaatti", diet: "Sisältyy" }
+        ]
+      },
+      3: {
+        day: "Wednesday",
+        dateLabel: "Wed",
+        dishes: [
+          { name: "Päivän kasvis/juusto: Lämmintä halloumi-juustoa", diet: "13.90 €" },
+          { name: "Päivän kala: Avotulella grillattua lohta", diet: "13.90 €" },
+          { name: "Klassikot: Pamelan lihapullat tai Döner Harjun yaprak-vasikanlihakebab", diet: "13.90 / 14.90 €" },
+          { name: "Päivän lisukkeet: Yrttiöljy, paahtoperunat, hummus & vihreä salaatti", diet: "Sisältyy" }
+        ]
+      },
+      4: {
+        day: "Thursday",
+        dateLabel: "Thu",
+        dishes: [
+          { name: "Päivän kasvis: Rapea tofu", diet: "13.90 €" },
+          { name: "Päivän liha: Pamelan mausteiset lihapullat tomaattikastikkeessa", diet: "13.90 €" },
+          { name: "Kebab: Döner Harjun yaprak-vasikanlihakebab tai vegekebab", diet: "13.90 / 14.90 €" },
+          { name: "Päivän lisukkeet: Ruskeavoi-tomaattikastike, kurkumariisi, minttujugurtti & vihersalaatti", diet: "Sisältyy" }
+        ]
+      },
+      5: {
+        day: "Friday",
+        dateLabel: "Fri",
+        dishes: [
+          { name: "Päivän kasvis: Falafel", diet: "13.90 €" },
+          { name: "Päivän liha: Pamelan mausteiset lihapullat tomaattikastikkeessa", diet: "13.90 €" },
+          { name: "Perjantaiklassikko: Döner Harjun vasikanlihakebab / vegekebab", diet: "13.90 / 14.90 €" },
+          { name: "Päivän lisukkeet: RuskeavoiBBQ-kastike, ranskalaiset perunat (tai riisi), jalopenohummus & salaatti", diet: "Sisältyy" }
+        ]
+      }
+    };
+
+    // Calculate current weekday (1=Mon, 2=Tue... 5=Fri; weekends default to Friday or Monday)
+    const todayIndex = new Date().getDay();
+    let selectedWeekday = (todayIndex >= 1 && todayIndex <= 5) ? todayIndex : 1;
+
     const restaurants = [
       {
         id: "pompier",
@@ -207,35 +456,28 @@
         address: "Albertinkatu 29, 00180 Helsinki",
         distanceMeters: 90,
         walkMinutes: 1,
-        lunchHours: "11:00 – 14:00",
+        lunchHours: "10:45 – 14:00",
         category: "bistro",
         mapsUrl: "https://maps.google.com/?q=Pompier+Albertinkatu+29+Helsinki",
-        websiteUrl: "https://pompier.fi/albertinkatu/lounas/",
-        tags: ["Buffet", "Fresh Bread", "Bistro"],
-        priceRange: "14.90 €",
-        menuHighlights: [
-          { name: "Roasted Salmon with Dill Butter Sauce & Potato Puree", diet: "GF" },
-          { name: "Creamy Chanterelle & Leek Risotto", diet: "VG, GF" },
-          { name: "Organic salad buffet & artisan house sourdough bread included", diet: "Buffet" }
-        ]
+        websiteUrl: "https://pompier.fi/#albertinkatu",
+        tags: ["Buffet", "Fresh Bread", "Daily Warm Plate", "Soup"],
+        priceRange: "14.50 € – 19.00 €",
+        hasDailyMenu: true
       },
       {
         id: "liemi",
-        name: "Liemi Bulevardi",
+        name: "Lie Mi Bulevardi",
         address: "Bulevardi 18, 00120 Helsinki",
         distanceMeters: 190,
         walkMinutes: 2,
-        lunchHours: "11:00 – 14:00",
+        lunchHours: "11:00 – 14:30",
         category: "asian",
-        mapsUrl: "https://maps.google.com/?q=Liemi+Bulevardi+18+Helsinki",
-        websiteUrl: "https://www.liemi.fi/en",
+        mapsUrl: "https://maps.google.com/?q=Lie+Mi+Bulevardi+18+Helsinki",
+        websiteUrl: "https://www.facebook.com/people/Lie-Mi-Bulevardi/100054875263646/",
         tags: ["Vietnamese", "Pho Soup", "Noodles"],
-        priceRange: "14.50 € – 15.90 €",
-        menuHighlights: [
-          { name: "Classic Beef Pho (Simmered 14h bone broth, rice noodles, fresh herbs)", diet: "GF" },
-          { name: "Crispy Lemongrass Tofu Rice Noodle Salad (Bun Chay)", diet: "VG, GF" },
-          { name: "Fresh Vietnamese Summer Rolls with House Peanut Dip", diet: "GF, DF" }
-        ]
+        priceRange: "14.00 €",
+        isLieMi: true,
+        menuHighlights: []
       },
       {
         id: "levant",
@@ -243,17 +485,13 @@
         address: "Bulevardi 15, 00120 Helsinki",
         distanceMeters: 230,
         walkMinutes: 3,
-        lunchHours: "11:00 – 15:00",
+        lunchHours: "11:00 – 14:30",
         category: "healthy",
         mapsUrl: "https://maps.google.com/?q=Levant+Bulevardi+15+Helsinki",
-        websiteUrl: "https://levant.fi",
+        websiteUrl: "https://www.lounaat.info/lounas/levant-bulevardi/helsinki",
         tags: ["Middle Eastern", "Meze", "Falafel"],
-        priceRange: "12.90 € – 14.50 €",
-        menuHighlights: [
-          { name: "Warm Falafel Meze Plate (Hummus, tabbouleh, muhammara, pita)", diet: "VG, DF" },
-          { name: "Spiced Chicken Shawarma Roll with garlic toum sauce", diet: "DF" },
-          { name: "Grilled Halloumi & Roasted Vegetable Bowl", diet: "GF" }
-        ]
+        priceRange: "14.50 € – 15.50 €",
+        hasDailyMenu: true
       },
       {
         id: "southpark",
@@ -261,17 +499,13 @@
         address: "Bulevardi 40 (Sinebrychoff Park), 00120 Helsinki",
         distanceMeters: 240,
         walkMinutes: 3,
-        lunchHours: "11:00 – 14:30",
+        lunchHours: "11:00 – 14:00",
         category: "bistro",
         mapsUrl: "https://maps.google.com/?q=Southpark+Restaurant+Bulevardi+40+Helsinki",
-        websiteUrl: "https://southparkrestaurant.fi",
-        tags: ["Park View", "Daily Plates", "Casual"],
-        priceRange: "14.70 €",
-        menuHighlights: [
-          { name: "Korean BBQ Glazed Pork Belly with Kimchi Fried Rice", diet: "DF" },
-          { name: "Miso Glazed Eggplant Bowl with edamame & sesame rice", diet: "VG, GF" },
-          { name: "Daily Chef's Market Soup with sourdough & herb butter", diet: "GF opt" }
-        ]
+        websiteUrl: "https://en.southparkrestaurant.fi/lounas",
+        tags: ["Park View", "Daily Plates", "Soup Buffet", "Salad Buffet"],
+        priceRange: "12.90 € – 16.90 €",
+        hasDailyMenu: true
       },
       {
         id: "fazer",
@@ -279,125 +513,106 @@
         address: "Bulevardi 38, 00120 Helsinki",
         distanceMeters: 250,
         walkMinutes: 3,
-        lunchHours: "11:00 – 14:00",
+        lunchHours: "10:30 alkaen",
         category: "bistro",
         mapsUrl: "https://maps.google.com/?q=Fazer+Cafe+Bulevardi+38+Helsinki",
-        websiteUrl: "https://www.fazer.fi/fazer-cafe/kahvilat/fazer-cafe-bulevardi/",
-        tags: ["Salmon Soup", "Salad Bar", "Classic"],
-        priceRange: "13.90 € – 15.50 €",
+        websiteUrl: "https://www.fazer.fi/fazer-cafe/lounas-fazer-cafessa/",
+        tags: ["Salaattibaari", "Uuniperunat", "Keitto & Piiras"],
+        priceRange: "8.70 € – 13.90 €",
         menuHighlights: [
-          { name: "Traditional Finnish Creamy Salmon Soup with rye archipelago bread", diet: "GF opt" },
-          { name: "Daily Warm Buffet Special (e.g. Herb-crusted Chicken / Roast Veg)", diet: "GF" },
-          { name: "Abundant Harvest Salad Bar + Fazer artisan breads & coffee", diet: "Buffet" }
+          { name: "Salaatti: Kokoa mieluisesi salaattibaarista tai valitse valmiista annoksista", diet: "alkaen 13.90 €" },
+          { name: "Uuniperuna vihersalaatilla: skagen-, lohi-, spicy tuna-, feta- tai falafeltäyte", diet: "13.90 €" },
+          { name: "Yrttinen tomaattikeitto (oregano, basilika, valkosipuli-crème fraîche & siemenet)", diet: "11.90 €" },
+          { name: "Piirakka salaatilla: Kinkku- tai feta-pinaattipiirakka ja vihreä salaatti", diet: "8.70 €" }
         ]
       },
       {
-        id: "noodlestory",
-        name: "Noodle Story",
-        address: "Fredrikinkatu 34, 00120 Helsinki",
-        distanceMeters: 300,
-        walkMinutes: 4,
+        id: "pamela",
+        name: "Pamela",
+        address: "Bulevardi 12, 00120 Helsinki",
+        distanceMeters: 280,
+        walkMinutes: 3,
         lunchHours: "11:00 – 15:00",
-        category: "asian",
-        mapsUrl: "https://maps.google.com/?q=Noodle+Story+Fredrikinkatu+34+Helsinki",
-        websiteUrl: "https://noodlestory.fi",
-        tags: ["Handmade Noodles", "Sichuan", "Dumplings"],
-        priceRange: "13.50 € – 14.90 €",
-        menuHighlights: [
-          { name: "Hand-Pulled Dan Dan Noodles with Minced Pork & Chili Oil", diet: "DF" },
-          { name: "Slow-Braised Beef Shank Noodle Soup in rich aromatic broth", diet: "DF" },
-          { name: "Crispy Pan-Fried Vegetarian Dumplings with sweet soy dip", diet: "VG" }
-        ]
+        category: "bistro",
+        mapsUrl: "https://maps.google.com/?q=Pamela+Bulevardi+12+Helsinki",
+        websiteUrl: "https://www.lounaat.info/lounas/pamela/helsinki",
+        tags: ["Hiiligrilli", "Lohta", "Lihapullat", "Döner Harju"],
+        priceRange: "13.90 € – 14.90 €",
+        hasDailyMenu: true
       },
       {
         id: "picnic",
-        name: "Cafe Picnic Fredrikinkatu",
+        name: "Picnic Fredrikinkatu",
         address: "Fredrikinkatu 29, 00120 Helsinki",
         distanceMeters: 320,
         walkMinutes: 4,
         lunchHours: "10:30 – 14:30",
         category: "healthy",
         mapsUrl: "https://maps.google.com/?q=Picnic+Fredrikinkatu+29+Helsinki",
-        websiteUrl: "https://picnic.fi",
-        tags: ["Baked Potatoes", "Quick Lunch", "Warm Bagels"],
-        priceRange: "11.90 € – 13.90 €",
+        websiteUrl: "https://picnic.fi/our-menu/#patongit",
+        tags: ["Baked Potatoes", "Quick Lunch", "Fresh Baguettes"],
+        priceRange: "8.50 € – 14.90 €",
         menuHighlights: [
-          { name: "Oven Baked Potato with Smoked Salmon or Chicken Curry Filling", diet: "GF" },
-          { name: "Warm Toasted Roast Beef & Mustard Remoulade Bagel", diet: "Quick" },
-          { name: "Daily Vegetarian Creamy Soup with fresh mini baguette", diet: "VG" }
+          { name: "Patongit: Patonki -ateria (patonki, pieni salaatti / kulho & 0,33 l juoma)", diet: "14.00 €" },
+          { name: "Bagelit & toastit: Bagel -ateria (bagel, pieni salaatti / kulho & 0,33 l juoma)", diet: "14.00 €" },
+          { name: "Salaatit: Tofu-teriyakisalaatti (marinoitu tofu, avokado, cashewpähkinä)", diet: "13.90 €" },
+          { name: "Uuniperunat: Tulinen kana-ränch-uuniperuna (2 uuniperunaa, kana, pekoni, tulinen ränch)", diet: "14.90 €" },
+          { name: "<strong>Check the website for more</strong>", diet: "" }
         ]
       },
       {
         id: "greenhippo",
-        name: "Green Hippo Fredrikintori",
+        name: "Green Hippo Punavuori",
         address: "Punavuorenkatu 2, 00120 Helsinki",
         distanceMeters: 350,
         walkMinutes: 4,
-        lunchHours: "11:00 – 15:00",
+        lunchHours: "11:00 – 14:00 (Ma-Pe)",
         category: "healthy",
-        mapsUrl: "https://maps.google.com/?q=Green+Hippo+Punavuorenkatu+2+Helsinki",
-        websiteUrl: "https://greenhippocafe.rocks",
-        tags: ["Healthy", "Fresh Bowls", "Salad"],
-        priceRange: "13.90 € – 15.50 €",
+        mapsUrl: "https://maps.google.com/?q=Green+Hippo+Punavuori+Punavuorenkatu+2+Helsinki",
+        websiteUrl: "https://www.greenhippocafe.rocks/menu",
+        tags: ["Bowls", "Avokadopasta", "Salaatit", "All-day"],
+        priceRange: "14.00 € (Lounas)",
         menuHighlights: [
-          { name: "Avocado Pasta with lime, chili, garlic & parmesan", diet: "VG" },
-          { name: "Warm Teriyaki Salmon Bowl with quinoa, edamame & pickled ginger", diet: "GF, DF" },
-          { name: "Vegan Falafel Bowl with beetroot hummus & roasted pumpkin", diet: "VG, GF" }
+          { name: "Avokadopasta (The Nothing New: avokado, chili, valkosipuli, basilikaöljy, parmesaani)", diet: "14.00 €" },
+          { name: "Chicken Bowl tai Tofu Bowl (musta riisi, punakaali, parsakaali, maapähkinävoikastike)", diet: "14.00 €" },
+          { name: "Buddha Bowl (Ready, Steady, Zen: kvinoa, bataatti, punajuurihummus, avokado, Nirvana-kastike)", diet: "14.00 €" },
+          { name: "Vuohenjuustosalaatti (Holy Goat: vuohenjuusto, omena, paahdettu nektariini, appelsiinivinaigrette)", diet: "14.00 €" },
+          { name: "<strong>Check the website for more</strong>", diet: "" }
         ]
       },
       {
         id: "seksico",
-        name: "Seksico Tacos",
-        address: "Fredrikinkatu / Uudenmaankatu area, 00120 Helsinki",
+        name: "Seksico Tacos Viiskulma",
+        address: "Laivurinkatu 10 (Viiskulma), 00150 Helsinki",
         distanceMeters: 350,
         walkMinutes: 4,
         lunchHours: "11:00 – 14:30",
         category: "street",
-        mapsUrl: "https://maps.google.com/?q=Seksico+Tacos+Helsinki",
+        mapsUrl: "https://maps.google.com/?q=Seksico+Tacos+Laivurinkatu+10+Helsinki",
         websiteUrl: "https://seksico.com/lunch.html",
-        tags: ["Mexican", "Street Tacos", "Tortillas"],
-        priceRange: "13.50 € – 14.50 €",
+        tags: ["Mexican Street Food", "Tacos", "Corn Tortillas", "Birria"],
+        priceRange: "14.90 € (Lunch Set)",
         menuHighlights: [
-          { name: "3 x Birria Beef Tacos with rich dipping consommé broth", diet: "GF" },
-          { name: "Crispy Battered Fish Tacos with chipotle crema & pico de gallo", diet: "DF" },
-          { name: "Smoky Black Bean & Grilled Cactus (Nopal) Tacos", diet: "VG, GF" }
+          { name: "Lunch Taco Set: Valitse 3 maissitacoa + päivän keitto (sopa del día)", diet: "14.90 €" },
+          { name: "Täytteet: Ali's Pastor (porsas), Chicken Pibil, Baja Fish, Frijoles Refritos tai Patata Roja", diet: "" },
+          { name: "Quesadilla lounaalla: Juusto, punasipuli, korianteri, valittu täyte, salsat & ranch", diet: "14.90 €" },
+          { name: "Birria Biggie: 3 rapeaa juustoista naudanlihatacoa & kuuma birrialiemi", diet: "19.90 €" },
+          { name: "<strong>Check the website for more</strong>", diet: "" }
         ]
       },
       {
         id: "labra",
-        name: "LaBra",
-        address: "Pursimiehenkatu 5, 00150 Helsinki",
-        distanceMeters: 450,
-        walkMinutes: 5,
-        lunchHours: "11:00 – 14:00",
+        name: "Ravintola LaBra",
+        address: "Eerikinkatu 32, 00180 Helsinki",
+        distanceMeters: 400,
+        walkMinutes: 4,
+        lunchHours: "11:00 – 14:30",
         category: "bistro",
-        mapsUrl: "https://maps.google.com/?q=Ravintola+LaBra+Pursimiehenkatu+5+Helsinki",
+        mapsUrl: "https://maps.google.com/?q=Ravintola+LaBra+Eerikinkatu+32+Helsinki",
         websiteUrl: "https://www.ravintolalabra.fi/lunch",
-        tags: ["Seasonal", "Artisanal", "Nordic"],
-        priceRange: "14.90 € – 16.50 €",
-        menuHighlights: [
-          { name: "Pan-Seared Pike Perch with brown butter, capers & crushed potatoes", diet: "GF" },
-          { name: "Slow-Braised Chuck Roll with root vegetable mash & dark thyme jus", diet: "GF, DF" },
-          { name: "Roasted Celeriac Steak with hazelnut emulsion & pickled mustard seeds", diet: "VG, GF" }
-        ]
-      },
-      {
-        id: "eatpoke",
-        name: "Eat Poke Kamppi",
-        address: "Urho Kekkosen katu 1, 00100 Helsinki",
-        distanceMeters: 500,
-        walkMinutes: 6,
-        lunchHours: "10:30 – 15:00",
-        category: "healthy",
-        mapsUrl: "https://maps.google.com/?q=Eat+Poke+Kamppi+Urho+Kekkosen+katu+1+Helsinki",
-        websiteUrl: "https://eatpoke.fi",
-        tags: ["Hawaiian Poke", "Salmon Bowls", "Fast Casual"],
-        priceRange: "13.90 € – 15.50 €",
-        menuHighlights: [
-          { name: "Classic Ahi Tuna & Fresh Salmon Poke Bowl with sesame soy & sushi rice", diet: "GF, DF" },
-          { name: "Spicy Mayo Shrimps Bowl with mango, avocado, wakame & crispy onions", diet: "DF" },
-          { name: "Marinated Tofu & Sweet Shiitake Bowl with ponzu dressing", diet: "VG, GF" }
-        ]
+        tags: ["Mediterranean", "Lunch Buffet", "Dürüm Bar", "Salad & Dips"],
+        priceRange: "15.50 € (Buffet)",
+        hasDailyMenu: true
       }
     ];
 
@@ -440,7 +655,43 @@
 
       noResults.classList.add('hidden');
 
-      container.innerHTML = filtered.map(r => `
+      container.innerHTML = filtered.map(r => {
+        const isPompier = r.id === "pompier";
+        const isLevant = r.id === "levant";
+        const isSouthpark = r.id === "southpark";
+        const isLabra = r.id === "labra";
+        const isPamela = r.id === "pamela";
+        const isLieMi = r.id === "liemi";
+        const hasTabs = isPompier || isLevant || isSouthpark || isLabra || isPamela;
+
+        let displayDishes = r.menuHighlights;
+        let activeLabel = "What's cooking today";
+
+        if (isLieMi) {
+          activeLabel = "What's cooking today";
+        } else if (isPompier) {
+          const menu = pompierWeeklyMenu[selectedWeekday] || pompierWeeklyMenu[1];
+          displayDishes = menu.dishes;
+          activeLabel = "What's cooking today";
+        } else if (isLevant) {
+          const menu = levantWeeklyMenu[selectedWeekday] || levantWeeklyMenu[1];
+          displayDishes = menu.dishes;
+          activeLabel = "What's cooking today";
+        } else if (isSouthpark) {
+          const menu = southparkWeeklyMenu[selectedWeekday] || southparkWeeklyMenu[1];
+          displayDishes = menu.dishes;
+          activeLabel = "What's cooking today";
+        } else if (isLabra) {
+          const menu = labraWeeklyMenu[selectedWeekday] || labraWeeklyMenu[1];
+          displayDishes = menu.dishes;
+          activeLabel = "What's cooking today";
+        } else if (isPamela) {
+          const menu = pamelaWeeklyMenu[selectedWeekday] || pamelaWeeklyMenu[1];
+          displayDishes = menu.dishes;
+          activeLabel = "What's cooking today";
+        }
+
+        return `
         <div class="bg-white rounded-lg border border-border p-6 flex flex-col justify-between hover:border-blueberry/40 transition-colors">
           <div>
             <!-- Top meta line: Name & Distance badge -->
@@ -470,15 +721,72 @@
 
             <!-- Menu items -->
             <div class="border-t border-border/70 pt-3 mb-5 space-y-2">
-              <div class="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Today's menu</div>
-              <ul class="space-y-1.5 text-xs text-stone">
-                ${r.menuHighlights.map(item => `
-                  <li class="flex items-start justify-between gap-2">
-                    <span>${item.name}</span>
-                    ${item.diet ? `<span class="text-[11px] font-medium text-muted-foreground shrink-0">${item.diet}</span>` : ''}
-                  </li>
-                `).join('')}
-              </ul>
+              <div class="flex items-center justify-between">
+                <span class="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                  ${activeLabel}
+                </span>
+                ${hasTabs ? `<span class="text-[11px] text-muted-foreground">Select day:</span>` : ''}
+              </div>
+
+              ${hasTabs ? `
+                <!-- Weekday Switcher -->
+                <div class="flex items-center gap-1 my-2">
+                  ${[1, 2, 3, 4, 5].map(d => {
+                    const label = ["Mon", "Tue", "Wed", "Thu", "Fri"][d - 1];
+                    const active = d === selectedWeekday;
+                    return `
+                      <button 
+                        type="button"
+                        onclick="setWeekday(${d})"
+                        class="px-2.5 py-1 text-xs rounded font-medium transition-colors ${active ? 'bg-blueberry text-white font-semibold' : 'bg-gravel text-stone hover:text-blueberry'}"
+                      >
+                        ${label}
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
+              ` : ''}
+
+              ${isLieMi ? `
+                <div class="space-y-3 pt-1">
+                  <p class="text-xs text-stone leading-relaxed">
+                    We serve lunch Monday to Friday 11.00 – 14.30.<br>
+                    Included in the lunch is a large salad table, coffee and tea. We always serve you at the table.
+                  </p>
+                  
+                  <!-- Facebook Live Lunch Photo Link Card -->
+                  <a 
+                    href="https://www.facebook.com/people/Lie-Mi-Bulevardi/100054875263646/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    class="group flex items-center gap-3 p-2.5 rounded-lg border border-border hover:border-blueberry bg-white transition-all shadow-sm"
+                  >
+                    <div class="w-10 h-10 rounded-md bg-[#1877F2]/10 text-[#1877F2] flex items-center justify-center shrink-0">
+                      <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-xs font-heading font-semibold text-blueberry group-hover:text-cloudberry flex items-center gap-1">
+                        View latest lunch post &amp; image
+                        <span class="text-[10px]">↗</span>
+                      </p>
+                      <p class="text-[11px] text-muted-foreground truncate">
+                        facebook.com/Lie-Mi-Bulevardi
+                      </p>
+                    </div>
+                  </a>
+                </div>
+              ` : `
+                <ul class="space-y-1.5 text-xs text-stone">
+                  ${displayDishes.map(item => `
+                    <li class="flex items-start justify-between gap-2">
+                      <span class="leading-relaxed">${item.name}</span>
+                      ${item.diet ? `<span class="text-[11px] font-medium text-muted-foreground shrink-0">${item.diet}</span>` : ''}
+                    </li>
+                  `).join('')}
+                </ul>
+              `}
             </div>
           </div>
 
@@ -490,7 +798,7 @@
               rel="noopener noreferrer" 
               class="flex-1 text-center py-2 px-3 rounded-md bg-gravel hover:bg-gravel/80 text-xs font-medium text-blueberry transition-colors"
             >
-              Website
+              Website &amp; Info
             </a>
             <button 
               onclick="copyToSlack('${r.id}')"
@@ -500,7 +808,13 @@
             </button>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
+    }
+
+    function setWeekday(dayIndex) {
+      selectedWeekday = dayIndex;
+      renderCards();
     }
 
     // Copy to Slack action
@@ -508,14 +822,50 @@
       const rest = restaurants.find(r => r.id === restaurantId);
       if (!rest) return;
 
-      const itemsText = rest.menuHighlights.map(m => `• ${m.name} (${m.diet})`).join('\n');
+      const isPompier = rest.id === "pompier";
+      const isLevant = rest.id === "levant";
+      const isSouthpark = rest.id === "southpark";
+      const isLabra = rest.id === "labra";
+      const isPamela = rest.id === "pamela";
+      const isLieMi = rest.id === "liemi";
+      let dishes = rest.menuHighlights;
+      let dayNote = '';
+
+      if (isLieMi) {
+        dishes = [
+          { name: "We serve lunch Monday to Friday 11.00 – 14.30. Included in the lunch is a large salad table, coffee and tea. We always serve you at the table.", diet: "" },
+          { name: "Check the latest lunch post and photo on Facebook", diet: "Weekly Special" }
+        ];
+      } else if (isPompier) {
+        const menu = pompierWeeklyMenu[selectedWeekday] || pompierWeeklyMenu[1];
+        dishes = menu.dishes;
+        dayNote = ` [${menu.dateLabel}]`;
+      } else if (isLevant) {
+        const menu = levantWeeklyMenu[selectedWeekday] || levantWeeklyMenu[1];
+        dishes = menu.dishes;
+        dayNote = ` [${menu.dateLabel}]`;
+      } else if (isSouthpark) {
+        const menu = southparkWeeklyMenu[selectedWeekday] || southparkWeeklyMenu[1];
+        dishes = menu.dishes;
+        dayNote = ` [${menu.dateLabel}]`;
+      } else if (isLabra) {
+        const menu = labraWeeklyMenu[selectedWeekday] || labraWeeklyMenu[1];
+        dishes = menu.dishes;
+        dayNote = ` [${menu.dateLabel} Buffet]`;
+      } else if (isPamela) {
+        const menu = pamelaWeeklyMenu[selectedWeekday] || pamelaWeeklyMenu[1];
+        dishes = menu.dishes;
+        dayNote = ` [${menu.dateLabel}]`;
+      }
+
+      const itemsText = dishes.map(m => m.diet ? `• ${m.name} (${m.diet})` : `• ${m.name}`).join('\n');
       const slackMessage = 
-`*${rest.name}* (${rest.distanceMeters}m from office, ~${rest.walkMinutes} min walk)
+`*${rest.name}*${dayNote} (${rest.distanceMeters}m from office, ~${rest.walkMinutes} min walk)
 Hours: ${rest.lunchHours}
 Address: ${rest.address}
 Price: ${rest.priceRange}
 
-Menu highlights:
+Menu:
 ${itemsText}
 
 Website: ${rest.websiteUrl}`;
