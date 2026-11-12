@@ -77,6 +77,15 @@
       </div>
 
       <div class="flex items-center gap-3">
+        <button 
+          id="refresh-menus-btn"
+          onclick="fetchLiveMenus(true)"
+          title="Fetch latest daily menus from restaurants"
+          class="text-xs font-medium px-3 py-1.5 rounded-md bg-white border border-border hover:border-blueberry text-blueberry transition-colors flex items-center gap-1.5"
+        >
+          <span id="refresh-icon">↻</span>
+          <span id="live-status-text">Live Sync</span>
+        </button>
         <span id="current-date-badge" class="text-xs font-medium px-3 py-1.5 rounded-md bg-gravel text-blueberry">
           Today
         </span>
@@ -199,70 +208,69 @@
 
   <!-- Application Logic -->
   <script>
-    // 11 Confirmed Restaurants around Albertinkatu 25 B
-    const pompierWeeklyMenu = {
-      1: {
-        day: "Monday",
-        dateLabel: "Maanantai",
-        dishes: [
-          { name: "Pöytä 1: Tapenadella gratinoitua kirjolohta, sitruunakermaviilikastiketta ja aurinkokuivatulla tomaatilla maustettua perunamuusia", diet: "14.50 €" },
-          { name: "Pöytä 2: Runsas salaattipöytä sekä kermaista tattikeittoa ja pikkelöityä omenaa", diet: "14.50 €" },
-          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
-        ]
-      },
-      2: {
-        day: "Tuesday",
-        dateLabel: "Tiistai",
-        dishes: [
-          { name: "Pöytä 1: Pannupihvejä härän paistista, chilimajoneesia ja pekoni-perunavoita", diet: "14.50 €" },
-          { name: "Pöytä 2: Runsas salaattipöytä sekä koskenlaskijan kirjolohikeittoa ja ruohosipuliöljyä", diet: "14.50 €" },
-          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
-        ]
-      },
-      3: {
-        day: "Wednesday",
-        dateLabel: "Keskiviikko",
-        dishes: [
-          { name: "Pöytä 1: Rapeaa kananpojan rintafileetä, gremolataa ja sahramirisottoa", diet: "14.50 €" },
-          { name: "Pöytä 2: Runsas salaattipöytä sekä meksikolaista maissi-bataattikeittoa ja nachoja", diet: "14.50 €" },
-          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
-        ]
-      },
-      4: {
-        day: "Thursday",
-        dateLabel: "Torstai",
-        dishes: [
-          { name: "Pöytä 1: Pompier Fish & Chips: curryremouladea, minttuherneitä ja paahdettuja perunoita", diet: "14.50 €" },
-          { name: "Pöytä 2: Runsas salaattipöytä sekä perinteistä hernekeittoa ja pannukakkua", diet: "14.50 €" },
-          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
-        ]
-      },
-      5: {
-        day: "Friday",
-        dateLabel: "Perjantai",
-        dishes: [
-          { name: "Pöytä 1: Pompierin lihapullia, Jaloviina-kermakastiketta, sokeroitua puolukkaa ja perunamuusia", diet: "14.50 €" },
-          { name: "Pöytä 2: Runsas salaattipöytä sekä bouillabaissea, rouillea ja krutonkeja", diet: "14.50 €" },
-          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
-        ]
-      }
-    };
-
-    const levantWeeklyMenu = {
+    // Fallback weekly menus (Current week 9.11. – 13.11.2026) — automatically overwritten when live menus load!
+    let pompierWeeklyMenu = {
       1: {
         day: "Monday",
         dateLabel: "Mon",
         dishes: [
-          { name: "Päivän lämmin: Kermainen savukana", diet: "14.50 €" },
-          { name: "Päivän kasvis: Okraa tomaattikastikkeessa", diet: "14.50 €" }
+          { name: "Pöytä 1: Haukiwallenbergejä, isoäidin kastiketta ja tillillä maustettua perunamurskaa", diet: "14.50 €" },
+          { name: "Pöytä 2: Runsas salaattipöytä sekä kukkakaalikeittoa ja savuporomoussea", diet: "14.50 €" },
+          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
         ]
       },
       2: {
         day: "Tuesday",
         dateLabel: "Tue",
         dishes: [
-          { name: "Päivän lämmin: Kanaa fajitas-tyyliin", diet: "14.50 €" },
-          { name: "Päivän kasvis: Tahini-kukkakaalia", diet: "14.50 €" }
+          { name: "Pöytä 1: Albertinkadun schnitzel porsaasta, vaahdotettua cowboymaustevoita ja perunamuusia", diet: "14.50 €" },
+          { name: "Pöytä 2: Runsas salaattipöytä sekä kermaista kirjolohikeittoa ja ruohosipuliöljyä", diet: "14.50 €" },
+          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
+        ]
+      },
+      3: {
+        day: "Wednesday",
+        dateLabel: "Wed",
+        dishes: [
+          { name: "Pöytä 1: Paahdettua kananpoikaa, italialaista tuoretomaatti-basilikakastiketta ja pecorinopastaa", diet: "14.50 €" },
+          { name: "Pöytä 2: Runsas salaattipöytä sekä paprikakeittoa ja kasvistortelliineja", diet: "14.50 €" },
+          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
+        ]
+      },
+      4: {
+        day: "Thursday",
+        dateLabel: "Thu",
+        dishes: [
+          { name: "Pöytä 1: Paahdettuja jättikatkaravunpyrstöjä, punaista currykastiketta ja paistettua riisiä", diet: "14.50 €" },
+          { name: "Pöytä 2: Runsas salaattipöytä sekä hernekeittoa ja pannukakkua", diet: "14.50 €" },
+          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
+        ]
+      },
+      5: {
+        day: "Friday",
+        dateLabel: "Fri",
+        dishes: [
+          { name: "Pöytä 1: Make your own Bao Bun: höyrysämpylöitä, Korean BBQ-porsasta, ranskalaisia perunoita ja kimchiä", diet: "14.50 €" },
+          { name: "Pöytä 2: Runsas salaattipöytä sekä kermaista katkarapukeittoa ja tillikrutonkeja", diet: "14.50 €" },
+          { name: "Kaikki herkut (Lämmin annos + keitto & salaattipöytä + kahvi/tee)", diet: "19.00 €" }
+        ]
+      }
+    };
+
+    let levantWeeklyMenu = {
+      1: {
+        day: "Monday",
+        dateLabel: "Mon",
+        dishes: [
+          { name: "Ei lounasta maanantaina (tarkista poikkeusaukiolo)", diet: "" }
+        ]
+      },
+      2: {
+        day: "Tuesday",
+        dateLabel: "Tue",
+        dishes: [
+          { name: "Päivän lämmin: Kanatagine", diet: "14.50 €" },
+          { name: "Päivän kasvis: Tagine (kasvis)", diet: "14.50 €" }
         ]
       },
       3: {
@@ -270,15 +278,15 @@
         dateLabel: "Wed",
         dishes: [
           { name: "Päivän lämmin: Lammastagine", diet: "14.50 €" },
-          { name: "Päivän kasvis: Tagine (kasvis/vegaaninen)", diet: "14.50 €" }
+          { name: "Päivän kasvis: Tagine (kasvis)", diet: "14.50 €" }
         ]
       },
       4: {
         day: "Thursday",
         dateLabel: "Thu",
         dishes: [
-          { name: "Päivän lämmin: Naudanlihapata", diet: "14.50 €" },
-          { name: "Päivän kasvis: Punainen kasviscurry", diet: "14.50 €" }
+          { name: "Päivän lämmin: Vihreitä papuja ja naudanlihaa tomaattikastikkeessa", diet: "14.50 €" },
+          { name: "Päivän kasvis: Vihreitä papuja tomaattikastikkeessa", diet: "14.50 €" }
         ]
       },
       5: {
@@ -291,93 +299,88 @@
       }
     };
 
-    const southparkWeeklyMenu = {
+    let southparkWeeklyMenu = {
       1: {
         day: "Monday",
         dateLabel: "Mon",
         dishes: [
-          { name: "Keitto: Silkkistä punajuurikeittoa", diet: "12.90 €" },
-          { name: "Kotiruoka: Paistettua hunajakanaa, kreikkalainen orzo-fetasalaatti & tzatziki", diet: "14.90 €" },
-          { name: "Kasvis: Paistettua BBQ-Oumphia! & kreikkalainen orzo-fetasalaatti", diet: "14.90 €" },
-          { name: "Viikon annos: Naudan paahtopaistia, myskikurpitsapyrettä & Café de Paris", diet: "16.90 €" }
+          { name: "Keitto: Paahteinen juureskeitto", diet: "12.90 €" },
+          { name: "Kotiruoka: Chilipestolla marinoitua kanaa sekä tortellineja pinaatti-parmesan kastikkeen kanssa", diet: "14.90 €" },
+          { name: "Kasvis: Kurpitsa wellington sekä tortellineja pinaatti-parmesan kastikkeen kanssa", diet: "14.90 €" },
+          { name: "Viikon annos: Mureaa naudan etuselkää tai paistettua kirjolohta", diet: "16.90 €" }
         ]
       },
       2: {
         day: "Tuesday",
         dateLabel: "Tue",
         dishes: [
-          { name: "Keitto: Kermainen palsternakka-omenakeitto", diet: "12.90 €" },
-          { name: "Kotiruoka: Talon lihamureketta, perunamuusia & kermainen sipuli-dijonkastike", diet: "14.90 €" },
-          { name: "Kasvis: Talon kikhernepihvejä, perunamuusia & sipuli-dijonkastike", diet: "14.90 €" },
-          { name: "Viikon annos: Paistettua kampelaa, piparjuuri-perunamuhennosta & tilliöljyä", diet: "16.90 €" }
+          { name: "Keitto: Kasvis-chilikeitto", diet: "12.90 €" },
+          { name: "Kotiruoka: Grillattuja porsaankasslerpihvejä, piparjuurikreemiä ja paahtojuureksia", diet: "14.90 €" },
+          { name: "Kasvis: Punajuuri-vuohenjuustopihvejä, piparjuurikreemiä ja paahtojuureksia", diet: "14.90 €" },
+          { name: "Viikon annos: Mureaa naudan etuselkää tai paistettua kirjolohta", diet: "16.90 €" }
         ]
       },
       3: {
         day: "Wednesday",
         dateLabel: "Wed",
         dishes: [
-          { name: "Keitto: Syksyinen / kauden kasvis-kaalikeitto", diet: "12.90 €" },
-          { name: "Kotiruoka: Pad Thai kanalla (paistetut riisinuudelit, kasvikset & pad thai -kastike)", diet: "14.90 €" },
-          { name: "Kasvis: Pad Thai tofulla (riisinuudelit, kasvikset & pähkinät)", diet: "14.90 €" },
-          { name: "Viikon annos: Naudan paahtopaistia, myskikurpitsapyrettä & Café de Paris", diet: "16.90 €" }
+          { name: "Keitto: Broccoli-cheddarkeitto", diet: "12.90 €" },
+          { name: "Kotiruoka: Ruiskuorrutetut muikut, valkosipulikastike, perunamuusia ja mummon kurkkuja", diet: "14.90 €" },
+          { name: "Kasvis: Ruiskuorrutettua rapeaa savutofua, valkosipulikastike, perunamuusia ja mummon kurkkuja", diet: "14.90 €" },
+          { name: "Viikon annos: Mureaa naudan etuselkää tai paistettua kirjolohta", diet: "16.90 €" }
         ]
       },
       4: {
         day: "Thursday",
         dateLabel: "Thu",
         dishes: [
-          { name: "Keitto: Hernekeitto palvikinkulla, tuoreella sipulilla & sinapilla", diet: "12.90 €" },
-          { name: "Kotiruoka: Savutaimenta, tilliperunaa, hölskykurkkuja & kermaviilikastiketta", diet: "14.90 €" },
-          { name: "Kasvis: Ruiskuorrutettua savutofua, tilliperunaa & hölskykurkkuja", diet: "14.90 €" },
-          { name: "Viikon annos: Paistettua kampelaa, piparjuuri-perunamuhennosta & tilliöljyä", diet: "16.90 €" }
+          { name: "Kotiruoka: Jamaikalaista jerk kanaa, paistettua riisiä ja papuja sekä avokadokastike", diet: "14.90 €" },
+          { name: "Kasvis: Jamaikalaista jerk tofua, paistettua riisiä ja papuja sekä avokadokastike", diet: "14.90 €" },
+          { name: "Viikon annos: Mureaa naudan etuselkää, punaviinikastiketta & tryffeli-sienipyree", diet: "16.90 €" },
+          { name: "Viikon annos: Paistettua kirjolohta, sitruuna-tilli kreemi & gratinoitua kukkakaalia", diet: "16.90 €" }
         ]
       },
       5: {
         day: "Friday",
         dateLabel: "Fri",
         dishes: [
-          { name: "Keitto: Kermainen kauden vihanneskeitto", diet: "12.90 €" },
-          { name: "Kotiruoka: Southern Fried Chicken, Mac and Cheese & raikas omena-slaw", diet: "14.90 €" },
-          { name: "Kasvis: Southern style rapea soijaleike, Mac and Cheese & omena-slaw", diet: "14.90 €" },
-          { name: "Viikon annos: Naudan paahtopaistia tai paistettua kampelaa", diet: "16.90 €" }
+          { name: "Kasvis / Taco: Taco-paistettua oumphia, murustettua fetaa, salsa verdeä, sipulia ja korianteria", diet: "14.90 €" },
+          { name: "Viikon annos: Mureaa naudan etuselkää, punaviinikastiketta & tryffeli-sienipyree", diet: "16.90 €" },
+          { name: "Viikon annos: Paistettua kirjolohta, sitruuna-tilli kreemi & gratinoitua kukkakaalia", diet: "16.90 €" }
         ]
       }
     };
 
-    const labraWeeklyMenu = {
+    let labraWeeklyMenu = {
       1: {
         day: "Monday",
         dateLabel: "Mon",
         dishes: [
-          { name: "Minced Beef Moussaka (aubergine, spiced beef, tomato)", diet: "15,50 €" },
-          { name: "Tofu Moussaka (aubergine, tofu, tomato, herbs)", diet: "15,50 €" },
-          { name: "Turkish Rice Pilaf & Red Lentil Soup (sis. salaattipöytä, leipä, dipit & kahvi)", diet: "15,50 €" }
+          { name: "Chicken piccata in lemon caper butter sauce", diet: "15,50 €" },
+          { name: "Buffet: Salaattipöytä, talon leipä, dipit & kahvi/tee", diet: "15,50 €" }
         ]
       },
       2: {
         day: "Tuesday",
         dateLabel: "Tue",
         dishes: [
-          { name: "Za'atar Roasted Chicken Thigh & Creamy spinach sauce", diet: "15,50 €" },
-          { name: "Vine Leaf Sarma (täytetyt viininlehtikääryleet)", diet: "15,50 €" },
-          { name: "Roasted Seasonal Vegetables (sis. salaattipöytä, leipä, dipit & kahvi)", diet: "15,50 €" }
+          { name: "Roasted chicken thigh in creamy garlic sauce", diet: "15,50 €" },
+          { name: "Buffet: Salaattipöytä, talon leipä, dipit & kahvi/tee", diet: "15,50 €" }
         ]
       },
       3: {
         day: "Wednesday",
         dateLabel: "Wed",
         dishes: [
-          { name: "Chipotle Beef Ragu (kidney beans, tomato, sweetcorn, coriander)", diet: "15,50 €" },
-          { name: "Miso Glazed Tofu & Broccoli with Steamed Rice", diet: "15,50 €" },
-          { name: "Buffet: Salaattipöytä, mezet, talon leipä & kahvi/tee", diet: "15,50 €" }
+          { name: "Crunchy breaded chicken schnitzel - cacik sauce", diet: "15,50 €" },
+          { name: "Turkish dolma, capsicum paprika filled with spiced rice", diet: "15,50 €" }
         ]
       },
       4: {
         day: "Thursday",
         dateLabel: "Thu",
         dishes: [
-          { name: "LaBra's Salmon Soup (perinteinen lohikeitto)", diet: "15,50 €" },
-          { name: "Spinach & Feta Pie & Paahdetut kauden kasvikset", diet: "15,50 €" },
+          { name: "Meatballs in tomatoes sauce, thyme, rosemary", diet: "15,50 €" },
           { name: "Buffet: Salaattipöytä, talon leipä, dipit & kahvi/tee", diet: "15,50 €" }
         ]
       },
@@ -385,7 +388,13 @@
         day: "Friday",
         dateLabel: "Fri",
         dishes: [
-          { name: "LaBra Dürüm Bar: Valitse kana, maustettu nauta, rapea munakoiso tai kikherneköfte", diet: "15,50 €" },
+          { name: "LaBra Dürüm Bar: Pulled chicken, spiced beef tai chickpea", diet: "15,50 €" },
+          { name: "Toppings & Sauce: Sumac onion, pickles, tomato, cucumber, fresh herbs & crispy potatoes", diet: "15,50 €" }
+        ]
+      }
+    };
+
+    let pamelaWeeklyMenu = {
           { name: "Täytteet & kastikkeet: Sumakkisipuli, pikkelit, yrtit, valkosipulijogurtti, ezme, tahini", diet: "Sisältyy" },
           { name: "Buffet: Salaattipöytä, vastaleivottu leipä, dipit & kahvi/tee", diet: "15,50 €" }
         ]
@@ -817,6 +826,186 @@
       renderCards();
     }
 
+    // Strip Finnish dietary abbreviations (G, L, VL, M, VE, VEG, GF, LF) cleanly from scraped lines
+    function cleanDietaryTags(text) {
+      return text
+        .replace(/\b(G|L|VL|M|VE|VEG|GF|LF)\b(?:\s*[,/]\s*\b(G|L|VL|M|VE|VEG|GF|LF)\b)*/gi, '')
+        .replace(/\(\s*\)/g, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+    }
+
+    // Fetch webpage HTML through CORS proxy so GitHub Pages updates menus daily in real time
+    async function fetchHtmlViaProxy(targetUrl) {
+      const proxies = [
+        `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
+        `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
+      ];
+      for (const proxyUrl of proxies) {
+        try {
+          const res = await fetch(proxyUrl);
+          if (!res.ok) continue;
+          if (proxyUrl.includes('allorigins')) {
+            const json = await res.json();
+            if (json && json.contents) return json.contents;
+          } else {
+            const html = await res.text();
+            if (html) return html;
+          }
+        } catch (e) {
+          // Try next proxy
+        }
+      }
+      return null;
+    }
+
+    // Parse lounaat.info HTML structure into { 1: {day, dateLabel, dishes}, ... }
+    function parseLounaatInfo(html, fallbackObj, filterFn) {
+      try {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const dayHeaders = doc.querySelectorAll('.menu.box, .item-body, [class*="menu"]');
+        const dayNames = [
+          { idx: 1, fi: 'Maanantai', en: 'Monday', short: 'Mon' },
+          { idx: 2, fi: 'Tiistai', en: 'Tuesday', short: 'Tue' },
+          { idx: 3, fi: 'Keskiviikko', en: 'Wednesday', short: 'Wed' },
+          { idx: 4, fi: 'Torstai', en: 'Thursday', short: 'Thu' },
+          { idx: 5, fi: 'Perjantai', en: 'Friday', short: 'Fri' }
+        ];
+
+        const updated = JSON.parse(JSON.stringify(fallbackObj));
+        let foundAny = false;
+
+        // lounaat.info wraps each day in .menu.box with h3 containing "Maanantaina 9.11."
+        const boxes = doc.querySelectorAll('.menu.box');
+        boxes.forEach(box => {
+          const heading = box.querySelector('h3, .title')?.textContent || '';
+          const matchedDay = dayNames.find(d => heading.toLowerCase().includes(d.fi.toLowerCase()));
+          if (!matchedDay) return;
+
+          const items = [];
+          box.querySelectorAll('li.menu-item, li').forEach(li => {
+            const dishEl = li.querySelector('.dish') || li;
+            const priceEl = li.querySelector('.price');
+            let rawName = dishEl.textContent.replace(/\s+/g, ' ').trim();
+            let rawPrice = priceEl ? priceEl.textContent.replace(/\s+/g, ' ').trim() : '';
+
+            if (priceEl && rawName.endsWith(rawPrice)) {
+              rawName = rawName.slice(0, -rawPrice.length).trim();
+            }
+
+            rawName = cleanDietaryTags(rawName);
+            rawPrice = rawPrice.replace(/e$/i, ' €').replace(/(\d+),(\d+)\s*€/, '$1.$2 €');
+
+            if (rawName && rawName.length > 3 && (!filterFn || filterFn(rawName))) {
+              items.push({ name: rawName, diet: rawPrice });
+            }
+          });
+
+          if (items.length > 0) {
+            updated[matchedDay.idx] = {
+              day: matchedDay.en,
+              dateLabel: matchedDay.short,
+              dishes: items
+            };
+            foundAny = true;
+          }
+        });
+
+        return foundAny ? updated : fallbackObj;
+      } catch (err) {
+        console.warn('Parse error:', err);
+        return fallbackObj;
+      }
+    }
+
+    // Parse Ravintola LaBra's live webpage
+    function parseLabraLive(html, fallbackObj) {
+      try {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const text = doc.body.innerText || '';
+        const dayMap = [
+          { idx: 1, key: 'Monday', en: 'Monday', short: 'Mon' },
+          { idx: 2, key: 'Tuesday', en: 'Tuesday', short: 'Tue' },
+          { idx: 3, key: 'Wendesday', altKey: 'Wednesday', en: 'Wednesday', short: 'Wed' },
+          { idx: 4, key: 'Thursday', en: 'Thursday', short: 'Thu' },
+          { idx: 5, key: 'Friday', en: 'Friday', short: 'Fri' }
+        ];
+
+        const updated = JSON.parse(JSON.stringify(fallbackObj));
+        let foundAny = false;
+
+        dayMap.forEach((d, i) => {
+          const regex = new RegExp(`(${d.key}${d.altKey ? '|' + d.altKey : ''})\\s+\\d{1,2}\\.\\d{1,2}\\.\\d{2,4}([\\s\\S]*?)(?=(Monday|Tuesday|Wendesday|Wednesday|Thursday|Friday|Veg\\s*=|Business Lunch|$))`, 'i');
+          const match = text.match(regex);
+          if (match && match[2]) {
+            const lines = match[2]
+              .split('\n')
+              .map(l => cleanDietaryTags(l.trim()))
+              .filter(l => l.length > 4 && !l.includes('15,50') && !l.toLowerCase().includes('please inform us') && !/^(gf|lf|veg|vegan|\/|\s)+$/i.test(l));
+
+            if (lines.length > 0) {
+              updated[d.idx] = {
+                day: d.en,
+                dateLabel: d.short,
+                dishes: lines.slice(0, 4).map(line => ({ name: line, diet: '15,50 €' }))
+              };
+              foundAny = true;
+            }
+          }
+        });
+
+        return foundAny ? updated : fallbackObj;
+      } catch (e) {
+        return fallbackObj;
+      }
+    }
+
+    // Fetch all daily menus automatically on page load
+    async function fetchLiveMenus(manualTrigger = false) {
+      const statusText = document.getElementById('live-status-text');
+      const refreshIcon = document.getElementById('refresh-icon');
+      if (statusText) statusText.innerText = 'Syncing...';
+      if (refreshIcon) refreshIcon.classList.add('animate-spin');
+
+      try {
+        const [pompierHtml, levantHtml, southparkHtml, pamelaHtml, labraHtml] = await Promise.all([
+          fetchHtmlViaProxy('https://www.lounaat.info/lounas/pompier/helsinki'),
+          fetchHtmlViaProxy('https://www.lounaat.info/lounas/levant-bulevardi/helsinki'),
+          fetchHtmlViaProxy('https://www.lounaat.info/lounas/southpark/helsinki'),
+          fetchHtmlViaProxy('https://www.lounaat.info/lounas/pamela/helsinki'),
+          fetchHtmlViaProxy('https://www.ravintolalabra.fi/lunch')
+        ]);
+
+        if (pompierHtml) {
+          pompierWeeklyMenu = parseLounaatInfo(pompierHtml, pompierWeeklyMenu, txt => !txt.toLowerCase().includes('laadukas lounas tarjoillaan'));
+        }
+        if (levantHtml) {
+          levantWeeklyMenu = parseLounaatInfo(levantHtml, levantWeeklyMenu);
+        }
+        if (southparkHtml) {
+          southparkWeeklyMenu = parseLounaatInfo(southparkHtml, southparkWeeklyMenu);
+        }
+        if (pamelaHtml) {
+          pamelaWeeklyMenu = parseLounaatInfo(pamelaHtml, pamelaWeeklyMenu);
+        }
+        if (labraHtml) {
+          labraWeeklyMenu = parseLabraLive(labraHtml, labraWeeklyMenu);
+        }
+
+        renderCards();
+
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' });
+        if (statusText) statusText.innerText = `Updated ${timeStr}`;
+        if (manualTrigger) showToast('Menus synced with live restaurant websites');
+      } catch (err) {
+        console.warn('Live menu sync fallback used:', err);
+        if (statusText) statusText.innerText = 'Live Sync';
+      } finally {
+        if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+      }
+    }
+
     // Copy to Slack action
     function copyToSlack(restaurantId) {
       const rest = restaurants.find(r => r.id === restaurantId);
@@ -1018,7 +1207,8 @@ Website: ${rest.websiteUrl}`;
       // Render cards immediately
       renderCards();
 
-      // Fetch weather asynchronously without blocking layout
+      // Automatically fetch fresh daily menus & weather in the background
+      fetchLiveMenus(false);
       fetchWeather();
     });
   </script>
