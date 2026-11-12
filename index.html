@@ -635,10 +635,11 @@
           item.category === currentCategory;
 
         const q = searchQuery.toLowerCase().trim();
+        const highlights = item.menuHighlights || [];
         const matchesSearch = !q || 
           item.name.toLowerCase().includes(q) ||
-          item.tags.some(t => t.toLowerCase().includes(q)) ||
-          item.menuHighlights.some(m => m.name.toLowerCase().includes(q));
+          (item.tags || []).some(t => t.toLowerCase().includes(q)) ||
+          highlights.some(m => m.name.toLowerCase().includes(q));
 
         return matchesCategory && matchesSearch;
       });
@@ -1204,6 +1205,11 @@ Website: ${rest.websiteUrl}`;
       fetchLiveMenus(false);
       fetchWeather();
     });
+
+    // Safety fallback in case DOMContentLoaded already fired
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      renderCards();
+    }
   </script>
 </body>
 </html>
